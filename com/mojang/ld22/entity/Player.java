@@ -1,5 +1,9 @@
 package com.mojang.ld22.entity;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import com.mojang.ld22.Game;
@@ -10,12 +14,10 @@ import com.mojang.ld22.gfx.Screen;
 import com.mojang.ld22.item.FurnitureItem;
 import com.mojang.ld22.item.Item;
 import com.mojang.ld22.item.PowerGloveItem;
-import com.mojang.ld22.item.ResourceItem;
-import com.mojang.ld22.item.ToolItem;
-import com.mojang.ld22.item.ToolType;
-import com.mojang.ld22.item.resource.Resource;
 import com.mojang.ld22.level.Level;
 import com.mojang.ld22.level.tile.Tile;
+import com.mojang.ld22.nbt.CompressedStreamTools;
+import com.mojang.ld22.nbt.NBTCompound;
 import com.mojang.ld22.screen.InventoryMenu;
 import com.mojang.ld22.sound.Sound;
 
@@ -44,6 +46,17 @@ public class Player extends Mob {
 
 		inventory.add(new FurnitureItem(new Workbench()));
 		inventory.add(new PowerGloveItem());
+	}
+	
+	public Player(Game game, InputHandler input, NBTCompound in) {
+		this.game = game;
+		this.input = input;
+		x = in.getInteger("x");
+		y = in.getInteger("y");
+		health = in.getInteger("health");
+		stamina = in.getInteger("stamina");
+		score = in.getInteger("score");
+		inventory.read(in.getTagList("inv"));
 	}
 
 	public void tick() {
@@ -112,6 +125,16 @@ public class Player extends Mob {
 			if (!use()) {
 				game.setMenu(new InventoryMenu(this));
 			}
+		}
+		if (input.save.clicked) {
+			try {
+				CompressedStreamTools.writeCompressed(game.save(), new FileOutputStream(new File("save.sav")));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		}
 		if (attackTime > 0) attackTime--;
 
@@ -391,5 +414,16 @@ public class Player extends Mob {
 	public void gameWon() {
 		level.player.invulnerableTime = 60 * 5;
 		game.won();
+	}
+	
+	public NBTCompound write() {
+		NBTCompound out = new NBTCompound();
+		out.setInteger("x", x);
+		out.setInteger("y", y);
+		out.setInteger("health", health);
+		out.setInteger("stamina", stamina);
+		out.setInteger("score", score);
+		out.setTag("inv", inventory.write());
+		return out;
 	}
 }

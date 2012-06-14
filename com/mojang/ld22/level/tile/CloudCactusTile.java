@@ -2,7 +2,6 @@ package com.mojang.ld22.level.tile;
 
 import com.mojang.ld22.entity.AirWizard;
 import com.mojang.ld22.entity.Entity;
-import com.mojang.ld22.entity.ItemEntity;
 import com.mojang.ld22.entity.Mob;
 import com.mojang.ld22.entity.Player;
 import com.mojang.ld22.entity.particle.SmashParticle;
@@ -10,7 +9,6 @@ import com.mojang.ld22.entity.particle.TextParticle;
 import com.mojang.ld22.gfx.Color;
 import com.mojang.ld22.gfx.Screen;
 import com.mojang.ld22.item.Item;
-import com.mojang.ld22.item.ResourceItem;
 import com.mojang.ld22.item.ToolItem;
 import com.mojang.ld22.item.ToolType;
 import com.mojang.ld22.level.Level;

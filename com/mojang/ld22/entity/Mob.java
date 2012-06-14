@@ -1,9 +1,11 @@
 package com.mojang.ld22.entity;
 
+
 import com.mojang.ld22.entity.particle.TextParticle;
 import com.mojang.ld22.gfx.Color;
 import com.mojang.ld22.level.Level;
 import com.mojang.ld22.level.tile.Tile;
+import com.mojang.ld22.nbt.NBTCompound;
 import com.mojang.ld22.sound.Sound;
 
 public class Mob extends Entity {
@@ -136,5 +138,12 @@ public class Mob extends Entity {
 		}
 
 		return false;
+	}
+	
+	public NBTCompound write() {
+		NBTCompound out = super.write();
+		out.setBoolean("isMob", true);
+		out.setInteger("health", health);
+		return out;
 	}
 }

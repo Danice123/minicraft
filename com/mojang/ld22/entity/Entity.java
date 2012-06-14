@@ -7,6 +7,7 @@ import com.mojang.ld22.gfx.Screen;
 import com.mojang.ld22.item.Item;
 import com.mojang.ld22.level.Level;
 import com.mojang.ld22.level.tile.Tile;
+import com.mojang.ld22.nbt.NBTCompound;
 
 public class Entity {
 	protected final Random random = new Random();
@@ -131,4 +132,11 @@ public class Entity {
 	public int getLightRadius() {
 		return 0;
 	}
+	
+	public NBTCompound write() {
+		NBTCompound out = new NBTCompound();
+		out.setInteger("x", x);
+		out.setInteger("y", y);
+		return out;
+		}
 }

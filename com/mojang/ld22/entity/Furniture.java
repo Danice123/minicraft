@@ -1,8 +1,10 @@
 package com.mojang.ld22.entity;
 
+
 import com.mojang.ld22.gfx.Screen;
 import com.mojang.ld22.item.FurnitureItem;
 import com.mojang.ld22.item.PowerGloveItem;
+import com.mojang.ld22.nbt.NBTCompound;
 
 public class Furniture extends Entity {
 	private int pushTime = 0;
@@ -54,5 +56,12 @@ public class Furniture extends Entity {
 
 	public void take(Player player) {
 		shouldTake = player;
+	}
+
+	public NBTCompound write() {
+		NBTCompound out = super.write();
+		out.setBoolean("isMob", false);
+		out.setString("name", name);
+		return out;
 	}
 }

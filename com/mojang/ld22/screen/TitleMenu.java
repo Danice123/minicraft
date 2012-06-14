@@ -1,14 +1,20 @@
 package com.mojang.ld22.screen;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import com.mojang.ld22.gfx.Color;
 import com.mojang.ld22.gfx.Font;
 import com.mojang.ld22.gfx.Screen;
+import com.mojang.ld22.nbt.CompressedStreamTools;
 import com.mojang.ld22.sound.Sound;
 
 public class TitleMenu extends Menu {
 	private int selected = 0;
 
-	private static final String[] options = { "Start game", "How to play", "About" };
+	private static final String[] options = { "Start game", "Load game", "How to play", "About" };
 
 	public TitleMenu() {
 	}
@@ -27,8 +33,20 @@ public class TitleMenu extends Menu {
 				game.resetGame();
 				game.setMenu(null);
 			}
-			if (selected == 1) game.setMenu(new InstructionsMenu(this));
-			if (selected == 2) game.setMenu(new AboutMenu(this));
+			if (selected == 1) {
+				Sound.test.play();
+				game.resetGame();
+				try {
+					game.load(CompressedStreamTools.readCompressed(new FileInputStream(new File("save.sav"))));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				game.setMenu(null);
+			}
+			if (selected == 2) game.setMenu(new InstructionsMenu(this));
+			if (selected == 3) game.setMenu(new AboutMenu(this));
 		}
 	}
 
@@ -46,7 +64,7 @@ public class TitleMenu extends Menu {
 			}
 		}
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 4; i++) {
 			String msg = options[i];
 			int col = Color.get(0, 222, 222, 222);
 			if (i == selected) {

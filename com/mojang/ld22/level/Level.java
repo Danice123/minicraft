@@ -6,15 +6,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-import com.mojang.ld22.entity.AirWizard;
-import com.mojang.ld22.entity.Entity;
-import com.mojang.ld22.entity.Mob;
-import com.mojang.ld22.entity.Player;
-import com.mojang.ld22.entity.Slime;
-import com.mojang.ld22.entity.Zombie;
+import com.mojang.ld22.entity.*;
 import com.mojang.ld22.gfx.Screen;
 import com.mojang.ld22.level.levelgen.LevelGen;
 import com.mojang.ld22.level.tile.Tile;
+import com.mojang.ld22.nbt.NBTCompound;
+import com.mojang.ld22.nbt.NBTList;
 
 public class Level {
 	private Random random = new Random();
@@ -40,6 +37,77 @@ public class Level {
 		}
 
 	};
+	
+	@SuppressWarnings("unchecked")
+	public Level(NBTCompound in, int level) {
+		if (level < 0) {
+			dirtColor = 222;
+		}
+		if (level == 1) {
+			dirtColor = 444;
+		}
+		this.depth = level;
+		this.w = in.getInteger("width");
+		this.h = in.getInteger("height");
+		tiles = in.getByteArray("tiles");
+		data = in.getByteArray("data");
+		
+		entitiesInTiles = new ArrayList[w * h];
+		for (int i = 0; i < w * h; i++) {
+			entitiesInTiles[i] = new ArrayList<Entity>();
+		}
+		
+		NBTList ent = in.getTagList("entities");
+		for (int i = 0; i < ent.tagCount(); i++) {
+			add(getEntity((NBTCompound) ent.tagAt(i)));
+		}
+	}
+	
+	private Entity getEntity(NBTCompound e) {
+		if (e.getBoolean("isMob")) {
+			Mob mob = null;
+			String type = e.getString("type");
+			if (type.equals("slime")) {
+				mob = new Slime(e.getInteger("lvl"));
+			}
+			if (type.equals("zombie")) {
+				mob = new Zombie(e.getInteger("lvl"));
+			}
+			if (type.equals("wiz")) {
+				mob = new AirWizard();
+			}
+			mob.x = e.getInteger("x");
+			mob.y = e.getInteger("y");
+			mob.health = e.getInteger("health");
+			return mob;
+		} else {
+			Furniture fur = null;
+			String name = e.getString("name");
+			if (name.equals("Anvil")) {
+				fur = new Anvil();
+			}
+			if (name.equals("Chest")) {
+				fur = new Chest();
+				((Chest) fur).inventory.read(e.getTagList("inv"));
+			}
+			if (name.equals("Furnace")) {
+				fur = new Furnace();
+			}
+			if (name.equals("Lantern")) {
+				fur = new Lantern();
+			}
+			if (name.equals("Oven")) {
+				fur = new Oven();
+			}
+			if (name.equals("Workbench")) {
+				fur = new Workbench();
+			}
+			
+			fur.x = e.getInteger("x");
+			fur.y = e.getInteger("y");
+			return fur;
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public Level(int w, int h, int level, Level parentLevel) {
@@ -305,5 +373,22 @@ public class Level {
 			}
 		}
 		return result;
+	}
+	
+	public NBTCompound write() {
+		NBTCompound out = new NBTCompound();
+		out.setInteger("width", w);
+		out.setInteger("height", h);
+		out.setByteArray("tiles", tiles);
+		out.setByteArray("data", data);
+		NBTList ent = new NBTList();
+		for (int i = 0; i < entities.size(); i++) {
+			Entity e = entities.get(i);
+			if ((e instanceof Furniture || e instanceof Mob) && !(e instanceof Player)) {
+				ent.appendTag(e.write());
+			}
+		}
+		out.setTag("entities", ent);
+		return out;
 	}
 }

@@ -8,7 +8,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
-import java.util.Random;
+//import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -20,6 +20,7 @@ import com.mojang.ld22.gfx.Screen;
 import com.mojang.ld22.gfx.SpriteSheet;
 import com.mojang.ld22.level.Level;
 import com.mojang.ld22.level.tile.Tile;
+import com.mojang.ld22.nbt.NBTCompound;
 import com.mojang.ld22.screen.DeadMenu;
 import com.mojang.ld22.screen.LevelTransitionMenu;
 import com.mojang.ld22.screen.Menu;
@@ -28,7 +29,7 @@ import com.mojang.ld22.screen.WonMenu;
 
 public class Game extends Canvas implements Runnable {
 	private static final long serialVersionUID = 1L;
-	private Random random = new Random();
+	//private Random random = new Random();
 	public static final String NAME = "Minicraft";
 	public static final int HEIGHT = 120;
 	public static final int WIDTH = 160;
@@ -350,5 +351,32 @@ public class Game extends Canvas implements Runnable {
 	public void won() {
 		wonTimer = 60 * 3;
 		hasWon = true;
+	}
+	
+	public NBTCompound save() {
+		NBTCompound save = new NBTCompound();
+		save.setInteger("time", gameTime);
+		save.setInteger("curLevel", currentLevel);
+		save.setCompoundTag("level0", levels[0].write());
+		save.setCompoundTag("level1", levels[1].write());
+		save.setCompoundTag("level2", levels[2].write());
+		save.setCompoundTag("level3", levels[3].write());
+		save.setCompoundTag("level4", levels[4].write());
+		save.setCompoundTag("player", player.write());
+		return save;
+	}
+	
+	public void load(NBTCompound in) {
+		gameTime = in.getInteger("time");
+		currentLevel = in.getInteger("curLevel");
+		levels[4] = new Level(in.getCompoundTag("level4"), 1);
+		levels[3] = new Level(in.getCompoundTag("level3"), 0);
+		levels[2] = new Level(in.getCompoundTag("level2"), -1);
+		levels[1] = new Level(in.getCompoundTag("level1"), -2);
+		levels[0] = new Level(in.getCompoundTag("level0"), -3);
+		level = levels[currentLevel];
+		
+		player = new Player(this, input, in.getCompoundTag("player"));
+		level.add(player);
 	}
 }

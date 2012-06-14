@@ -6,6 +6,7 @@ import com.mojang.ld22.entity.Player;
 import com.mojang.ld22.gfx.Screen;
 import com.mojang.ld22.level.Level;
 import com.mojang.ld22.level.tile.Tile;
+import com.mojang.ld22.nbt.NBTCompound;
 import com.mojang.ld22.screen.ListItem;
 
 public class Item implements ListItem {
@@ -52,5 +53,11 @@ public class Item implements ListItem {
 
 	public boolean matches(Item item) {
 		return item.getClass() == getClass();
+	}
+	
+	public NBTCompound write() {
+		NBTCompound out = new NBTCompound();
+		out.setString("name", getName());
+		return out;
 	}
 }

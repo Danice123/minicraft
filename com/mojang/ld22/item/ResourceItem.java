@@ -8,6 +8,7 @@ import com.mojang.ld22.gfx.Screen;
 import com.mojang.ld22.item.resource.Resource;
 import com.mojang.ld22.level.Level;
 import com.mojang.ld22.level.tile.Tile;
+import com.mojang.ld22.nbt.NBTCompound;
 
 public class ResourceItem extends Item {
 	public Resource resource;
@@ -61,4 +62,10 @@ public class ResourceItem extends Item {
 		return count <= 0;
 	}
 
+	public NBTCompound write() {
+		NBTCompound out = new NBTCompound();
+		out.setString("name", getName());
+		out.setInteger("amount", count);
+		return out;
+	}
 }

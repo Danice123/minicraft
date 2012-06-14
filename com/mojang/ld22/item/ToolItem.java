@@ -7,6 +7,7 @@ import com.mojang.ld22.entity.ItemEntity;
 import com.mojang.ld22.gfx.Color;
 import com.mojang.ld22.gfx.Font;
 import com.mojang.ld22.gfx.Screen;
+import com.mojang.ld22.nbt.NBTCompound;
 
 public class ToolItem extends Item {
 	private Random random = new Random();
@@ -78,5 +79,12 @@ public class ToolItem extends Item {
 			return true;
 		}
 		return false;
+	}
+	
+	public NBTCompound write() {
+		NBTCompound out = new NBTCompound();
+		out.setString("name", type.name);
+		out.setInteger("lvl", level);
+		return out;
 	}
 }

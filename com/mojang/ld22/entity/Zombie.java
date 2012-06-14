@@ -4,6 +4,7 @@ import com.mojang.ld22.gfx.Color;
 import com.mojang.ld22.gfx.Screen;
 import com.mojang.ld22.item.ResourceItem;
 import com.mojang.ld22.item.resource.Resource;
+import com.mojang.ld22.nbt.NBTCompound;
 
 public class Zombie extends Mob {
 	private int xa, ya;
@@ -98,6 +99,13 @@ public class Zombie extends Mob {
 			level.player.score += 50 * lvl;
 		}
 
+	}
+	
+	public NBTCompound write() {
+		NBTCompound out = super.write();
+		out.setString("type", "zombie");
+		out.setInteger("lvl", lvl);
+		return out;
 	}
 
 }
